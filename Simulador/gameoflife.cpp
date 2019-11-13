@@ -18,10 +18,10 @@ int g_dir[8][2] =
    {0, -1}, {0, 1},
    {1, -1}, {1, 0}, {1, 1}};
 
-template <size_t rows, size_t cols>
-void print_world(bool (&world)[rows][cols]){
-   for(int r=0; r<rows; r++){
-      for(int c=0; c<cols; c++){
+void print_world(const World2D &world){
+   int size = (int)world.size();
+   for(int r=0; r<size; r++){
+      for(int c=0; c<size; c++){
          cout << world[r][c] << " ";
       }
       cout << endl;
@@ -58,14 +58,14 @@ double simulate_world(string world_file, int &generations){
    double total = 0;
 
    if (file.is_open()){
-      size_t N = 0; file >> N;
+      int N = 0; file >> N;
       World2D world;
 
       //fill the world
-      size_t n;
-      for(size_t r=0; r<N; r++) {
+      int n = 0;
+      for(int r=0; r<N; r++) {
          WorldLine wl;
-         for(size_t c=0; c<N; c++) {
+         for(int c=0; c<N; c++) {
             file >> n;
             wl.push_back(n);
          }
@@ -79,6 +79,10 @@ double simulate_world(string world_file, int &generations){
       //START THE SIMULATION
       clock_t begin = clock();
 
+
+      cout << "Generación: 0" << endl;
+      print_world(world);
+      cout << endl;
       for(int i=0; i<generations; i++){
          //Detect cells that die or born
          for(int r=0; r<N; r++){
@@ -94,7 +98,12 @@ double simulate_world(string world_file, int &generations){
          //Change the cells
          for(Cell cell : cells){
             world[cell.r][cell.c] = !world[cell.r][cell.c];
-         }
+         } 
+
+         
+         cout << "Generación: " << i+1 << endl;
+         print_world(world);
+         cout << endl;        
       }
 
       //END SIMULATION
@@ -123,9 +132,11 @@ int main(int argc, char *argv[]) {
       double time=0, totalTime=0, avgTime=0;
 
       for(int i=0; i<M; i++){
-         time = simulate_world(folder+"world"+to_string(i)+".txt", generations);
+         cout << "World: " << i << endl;
+         time = simulate_world(folder+"world"+to_string(i)+".txt", generations);         
          totalTime += time;
       }
       avgTime = totalTime/M;      
+      cout << "AvgTime: " << avgTime << endl;
    }
 }
