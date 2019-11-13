@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string>
 #include <ctime>
+#include <unistd.h>
 
 using namespace std;
 
@@ -17,6 +18,19 @@ int g_dir[8][2] =
 {{-1, -1}, {-1, 0}, {-1, 1},
    {0, -1}, {0, 1},
    {1, -1}, {1, 0}, {1, 1}};
+
+void print_world_beautiful(const World2D &world){
+   int size = (int)world.size();
+   for(int r=0; r<size; r++){
+      for(int c=0; c<size; c++){
+         if(world[r][c])
+            cout << "# ";
+         else
+            cout << "· ";
+      }
+      cout << endl;
+   }
+}
 
 void print_world(const World2D &world){
    int size = (int)world.size();
@@ -81,7 +95,8 @@ double simulate_world(string world_file, int &generations){
 
 
       cout << "Generación: 0" << endl;
-      print_world(world);
+      //print_world(world);
+      print_world_beautiful(world);
       cout << endl;
       for(int i=0; i<generations; i++){
          //Detect cells that die or born
@@ -100,9 +115,12 @@ double simulate_world(string world_file, int &generations){
             world[cell.r][cell.c] = !world[cell.r][cell.c];
          } 
 
+         usleep(500000);
+         system("clear");
          
          cout << "Generación: " << i+1 << endl;
-         print_world(world);
+         //print_world(world);
+         print_world_beautiful(world);
          cout << endl;        
       }
 
@@ -117,7 +135,7 @@ double simulate_world(string world_file, int &generations){
 }
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {   
    string folder = "";
    int generations = 0, M = 0;
 
