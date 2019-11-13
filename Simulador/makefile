@@ -1,2 +1,2 @@
 all: gameoflife.cpp
-	 g++ -o gameoflife gameoflife.cpp 
+	 g++ -Wall -g -o gameoflife gameoflife.cpp 

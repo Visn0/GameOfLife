@@ -30,8 +30,25 @@ void print_world(bool (&world)[rows][cols]){
 
 int celulas_vivas(const World2D& world, const int& row, const int& col) {
    int c = 0;
-   for (auto dir : g_dir) {
-      if( world[ row+dir[0] ][ col+dir[1] ] ) c++;
+   int size = (int) world.size();
+   int nr = 0;
+   int nc = 0;
+
+   for (auto dir : g_dir) {      
+      nr = row + dir[0];
+      nc = col + dir[1];
+
+      if(nr >= size) 
+         nr = nr % size;
+      else if (nr < 0) 
+         nr = nr + size;
+
+      if(nc >= size) 
+         nc = nc % size;
+      else if (nc < 0) 
+         nc = nc + size;
+
+      if(world[nr][nc]) c++;
    }
    return c;
 }
