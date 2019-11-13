@@ -75,7 +75,7 @@ double simulate_world(string world_file, int &generations){
             }
          }
          //Change the cells
-         for(cell : cells){
+         for(Cell cell : cells){
             world[cell.r][cell.c] = !world[cell.r][cell.c];
          }
       }
