@@ -72,13 +72,17 @@ int main(int argc, char *argv[])
       vector<bool**> worlds(M);
 
       int i;
-      omp_set_num_threads(4);      
-      #pragma omp parallel for shared(worlds) private(i) schedule(static, 50)      
+      int chunk = 100;
+      omp_set_num_threads(4);  
+      #pragma omp parallel shared(worlds, chunk) private(i)
+      {
+         #pragma omp for schedule(dynamic, chunk) nowait //schedule(static, 50)      
          for(i = 0; i < M; i++)
          {
             worlds[i] = create_world(N);
          }
-
+      }    
+     
       // double end_m = clock();
       // double time = (end_m - start)/CLOCKS_PER_SEC * 1000;
       // cout << "Matrices llenas en: " << time << " ms" << endl;
