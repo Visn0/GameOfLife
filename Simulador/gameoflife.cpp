@@ -109,34 +109,42 @@ double simulate_world(World2D world, int &generations)
    //START THE SIMULATION
    clock_t begin = clock();
 
-   cout << "Generación: 0" << endl;
-   //print_world(world);
+   cout << "Generación: 0" << endl;   
    print_world_beautiful(world);
    cout << endl;
-   for(int i=0; i<generations; i++){
+
+   for(int i=0; i<generations; i++)
+   {
       //Detect cells that die or born
-      for(int r=0; r<N; r++){
-         for(int c=0; c<N; c++){
+      for(int r=0; r<N; r++)
+      {
+         for(int c=0; c<N; c++)
+         {
             vivas = celulas_vivas(world, r, c);
-            if(!world[r][c]){ //if its dead
+            if(!world[r][c])
+            { //if its dead
                if(vivas == 3) cells.push_back({r, c}); 
-            }else{
+            }
+            else
+            {
                if(vivas != 2 && vivas != 3) cells.push_back({r, c});
             }
          }
       }
       //Change the cells
-      for(Cell cell : cells){
+      for(Cell cell : cells)      
          world[cell.r][cell.c] = !world[cell.r][cell.c];
-      } 
+      
+      cells.clear();       
 
-      usleep(500000);
+      usleep(200000);
       system("clear");
       
       cout << "Generación: " << i+1 << endl;
       //print_world(world);
       print_world_beautiful(world);
       cout << endl;        
+      
    }
 
    //END SIMULATION
