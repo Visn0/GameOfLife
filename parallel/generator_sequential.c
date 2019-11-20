@@ -53,13 +53,21 @@ int main()
     fast_srand(time(NULL));
     unsigned i;
     char** pattern;
-    // #pragma omp parallel for private(i, pattern) schedule(static, 50) num_threads(4)
+    FILE* report = fopen("report", "w");
+    fprintf(report, "Num_Pattern Value_N Num_Cells Time \n");
+    unsigned num_pattern = 0;
+    double total_time = 0;
     for (i = 0; i < m; i++)
     {
+        time_t start = clock();
         pattern = (char**) malloc(sizeof(char) * n * n);
         for (unsigned j = 0; j < n; j++)
             pattern[j] = (char*) malloc(sizeof(char) * n);
         seed_matrix(pattern, n);
+        time_t end = clock();
+        double total = (double)(end - start) * 1000 / CLOCKS_PER_SEC;
+        total_time += total;
+        fprintf(report, "%d %d %d %f\n", num_pattern++, n, n*n, total);
         char filename[20];
         sprintf(filename, "patterns/pattern_%d", i);
         save_as_file(filename, pattern, n);
@@ -67,5 +75,8 @@ int main()
             free(pattern[j]);
         free(pattern);
     }
+    fprintf(report, "Total_Patterns: %d   Total_Cells: %d, Time_by_pattern: %f",
+            n, n*m*n, (float) total_time / m);
+    fclose(report);
     return 0;
 }

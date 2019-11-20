@@ -67,94 +67,125 @@ int celulas_vivas(const World2D& world, const int& row, const int& col) {
    return c;
 }
 
-double simulate_world(string world_file, int &generations){
+World2D readFile(string world_file)
+{
    ifstream file(world_file);
-   double total = 0;
+   World2D world;
 
-   if (file.is_open()){
-      int N = 0; file >> N;
-      World2D world;
+   if (file.is_open())
+   {
+      int N = 0; file >> N;      
 
       //fill the world
       int n = 0;
-      for(int r=0; r<N; r++) {
+      for(int r=0; r<N; r++) 
+      {
          WorldLine wl;
-         for(int c=0; c<N; c++) {
+         for(int c=0; c<N; c++) 
+         {
             file >> n;
             wl.push_back(n);
          }
+
          world.push_back(wl);
       }
-      file.close(); // no need to close but OK
 
+      file.close();
+   }
+   else //cout << "Unable to open file: " + world_file << endl;
 
-      int vivas=0;
-      vector<Cell> cells;
-      //START THE SIMULATION
-      clock_t begin = clock();
+   return world;
+}
 
+double simulate_world(World2D world, int &generations)
+{   
+   double total = 0;
+   
+   int vivas=0;
+   int N = world.size();
 
-      cout << "Generación: 0" << endl;
-      //print_world(world);
-      print_world_beautiful(world);
-      cout << endl;
-      for(int i=0; i<generations; i++){
-         //Detect cells that die or born
-         for(int r=0; r<N; r++){
-            for(int c=0; c<N; c++){
-               vivas = celulas_vivas(world, r, c);
-               if(!world[r][c]){ //if its dead
-                  if(vivas == 3) cells.push_back({r, c}); 
-               }else{
-                  if(vivas != 2 && vivas != 3) cells.push_back({r, c});
-               }
+   vector<Cell> cells;
+   
+   //START THE SIMULATION
+   clock_t begin = clock();
+
+   // //cout << "Generación: 0" << endl;   
+   // print_world_beautiful(world);
+   // //cout << endl;
+
+   for(int i=0; i<generations; i++)
+   {
+      //Detect cells that die or born
+      for(int r=0; r<N; r++)
+      {
+         for(int c=0; c<N; c++)
+         {
+            vivas = celulas_vivas(world, r, c);
+            if(!world[r][c])
+            { //if its dead
+               if(vivas == 3) cells.push_back({r, c}); 
+            }
+            else
+            {
+               if(vivas != 2 && vivas != 3) cells.push_back({r, c});
             }
          }
-         //Change the cells
-         for(Cell cell : cells){
-            world[cell.r][cell.c] = !world[cell.r][cell.c];
-         } 
-
-         usleep(500000);
-         system("clear");
-         
-         cout << "Generación: " << i+1 << endl;
-         //print_world(world);
-         print_world_beautiful(world);
-         cout << endl;        
       }
+      //Change the cells
+      for(Cell cell : cells)      
+         world[cell.r][cell.c] = !world[cell.r][cell.c];
+      
+      cells.clear();       
 
-      //END SIMULATION
-      clock_t end = clock();
-      total = double(end - begin)*1000 / CLOCKS_PER_SEC;
-
+      // usleep(200000);
+      // system("clear");
+      
+      // //cout << "Generación: " << i+1 << endl;
+      // //print_world(world);
+      // print_world_beautiful(world);
+      //cout << endl;        
+      
    }
-   else cout << "Unable to open file " + world_file << endl;
+
+   //END SIMULATION
+   clock_t end = clock();
+   total = double(end - begin)*1000 / CLOCKS_PER_SEC;   
 
    return total;
 }
 
 
-int main(int argc, char *argv[]) {   
+int main(int argc, char *argv[]) 
+{   
    string folder = "";
    int generations = 0, M = 0;
 
-   if(argc < 3){
-      cout << "Not enough arguments" << endl;
-      cout << "./gameoflife [dir folder] [num generations] [num patterns]" << endl;
+   if(argc < 3)
+   {
+      //cout << "Not enough arguments" << endl;
+      //cout << "./gameoflife [dir folder] [num generations] [num patterns]" << endl;
    }
-   else{
+   else
+   {
       folder = argv[1];
       generations = atoi(argv[2]);
       M = atoi(argv[3]);
       double time=0, totalTime=0, avgTime=0;
 
-      for(int i=0; i<M; i++){
-         cout << "World: " << i << endl;
-         time = simulate_world(folder+"world"+to_string(i)+".txt", generations);         
+      World2D *worlds = (World2D*)malloc(sizeof(World2D)*M);
+
+      for(int i=0; i<M; i++)               
+         worlds[i] = readFile(folder+"world"+to_string(i)+".txt");
+      
+
+      for(int i=0; i<M; i++)
+      {
+         ////cout << "World: " << i << endl;
+         time = simulate_world(worlds[i], generations);         
          totalTime += time;
       }
+
       avgTime = totalTime/M;      
-      cout << "AvgTime: " << avgTime << endl;
+      //cout << "AvgTime: " << avgTime << endl;
    }
 }
