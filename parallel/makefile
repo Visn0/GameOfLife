@@ -1,2 +1,2 @@
 all:
-	g++ -Wall -g generator.cc -o generator -fopenmp
+	g++ -Wall -g generator.c -o generator -fopenmp
