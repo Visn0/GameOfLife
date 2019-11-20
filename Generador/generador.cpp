@@ -4,29 +4,15 @@
 #include <time.h>
 #include <string>
 #include <ctime>
+#include <vector>
 
 using namespace std;
 
 //return time to create the matrix
-double create_world(int &N, int &count){
+void createFile(string filename, bool** matrix, int N) 
+{
    ofstream file;
-   int NN = N*N;
-
-   //-------------------------------------------
-   clock_t begin = clock();
-   bool matrix[N][N];
-   srand(time(NULL));
-
-   for(int n1=0; n1<N; n1++){   
-      for(int n2=0; n2<N; n2++){   
-         matrix[n1][n2] = rand() % 2; // 0 or 1
-      }
-   }
-   clock_t end = clock();
-   double total = double(end - begin)*1000 / CLOCKS_PER_SEC;
-   //-------------------------------------------
-
-   file.open("patterns/world" + to_string(count) + ".txt");
+   file.open(filename);
    file << N << "\n";
 
    for(int r=0; r<N; r++){   
@@ -36,11 +22,32 @@ double create_world(int &N, int &count){
       file << "\n";
    }
    file.close();
-   return total;
+}
+
+bool** create_world(int &N){
+   
+   int NN = N*N;   
+
+   bool** matrix = (bool**)malloc(sizeof(bool*)*N);
+   for(int i = 0; i < N; i++)
+      matrix[i] = (bool*)malloc(sizeof(bool)*N);
+
+   int n1=0, n2=0;
+
+   for(n1=0; n1<N; n1++){   
+      for(n2=0; n2<N; n2++){   
+         matrix[n1][n2] = rand() % 2; // 0 or 1
+      }
+   }   
+
+   return matrix;
 }
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
+   srand(time(NULL));
+   
    int N=0, M=0;
 
    if(argc < 2){
@@ -51,17 +58,34 @@ int main(int argc, char *argv[]) {
       N = atoi(argv[1]);
       M = atoi(argv[2]);
       cout << N << " " << M << endl;
-      double time=0, totalTime=0, avgTime=0;
+      double totalTime, avgTime=0;
 
       ofstream file;
       file.open("patterns/patterns_report.txt");
       
-      for(int i=0; i<M; i++){
-         time = create_world(N, i);
-         totalTime += time;
-         file << i << " " << N << " " << N*N << " " << time << endl;
+      double start = clock();
+      vector<bool**> worlds(M);
+
+      int i;      
+      for(i = 0; i < M; i++)
+      {
+         worlds[i] = create_world(N);
       }
-      avgTime = totalTime/M;
+
+      double end_m = clock();
+      double time = (end_m-start)/CLOCKS_PER_SEC * 1000;
+      cout << "Matrices llenas en: " << time << " ms" << endl;
+         
+      for(int j=0; j<M; j++){
+         string world_name = "patterns/world" + to_string(j) + ".txt";
+         createFile(world_name, worlds[j], N);
+         file << j << " " << N << " " << N*N << " " << time << endl;      
+      }
+
+      double end = clock();
+      totalTime = (end - start) / CLOCKS_PER_SEC * 1000; // miliseconds
+      avgTime = totalTime/(double)M;
+      
       file << M << " " << N*N*M << " " << totalTime << " " << avgTime << endl;
       file.close();
    }

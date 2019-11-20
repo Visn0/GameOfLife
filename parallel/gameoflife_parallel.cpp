@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
          worlds[i] = readFile(folder+"world"+to_string(i)+".txt");
       
       int i = 0;
-      omp_set_num_threads(2);
+      omp_set_num_threads(4);
       #pragma omp parallel for shared(worlds) private (i) schedule(static, 10)
          for(i=0; i<M; i++)
          {
