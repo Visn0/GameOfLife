@@ -1,3 +1,4 @@
+#include <omp.h>
 #include <iostream>
 #include <vector>
 #include <fstream> //ifstream
@@ -116,26 +117,32 @@ double simulate_world(World2D world, int &generations)
    for(int i=0; i<generations; i++)
    {
       //Detect cells that die or born
-      for(int r=0; r<N; r++)
-      {
-         for(int c=0; c<N; c++)
+      int r,c;
+      omp_set_num_threads(2);      
+      #pragma omp parallel for shared(world, N) private (r,c, vivas, cells) schedule(static, 10)      
+         for(r=0; r<N; r++)
          {
-            vivas = celulas_vivas(world, r, c);
-            if(!world[r][c])
-            { //if its dead
-               if(vivas == 3) cells.push_back({r, c}); 
-            }
-            else
-            {
-               if(vivas != 2 && vivas != 3) cells.push_back({r, c});
-            }
-         }
-      }
-      //Change the cells
-      for(Cell cell : cells)      
-         world[cell.r][cell.c] = !world[cell.r][cell.c];
+            //omp_set_num_threads(1);   
+            //#pragma omp parallel for shared(world, N) private (c, vivas, cells) schedule(static, 10) 
+               for(c=0; c<N; c++)
+               {
+                  vivas = celulas_vivas(world, r, c);
+                  if(!world[r][c])
+                  { //if its dead
+                     if(vivas == 3) cells.push_back({r, c}); 
+                  }
+                  else
+                  {
+                     if(vivas != 2 && vivas != 3) cells.push_back({r, c});
+                  }
+               }
+         }      
+         //Change the cells
+         for(Cell cell : cells)      
+            world[cell.r][cell.c] = !world[cell.r][cell.c];
+         
+         cells.clear();       
       
-      cells.clear();       
 
       // usleep(200000);
       // system("clear");
@@ -170,20 +177,25 @@ int main(int argc, char *argv[])
       folder = argv[1];
       generations = atoi(argv[2]);
       M = atoi(argv[3]);
-      double time=0, totalTime=0, avgTime=0;
+      double totalTime=0, avgTime=0;
 
+      double *times = (double*)malloc(sizeof(double)*M);
       World2D *worlds = (World2D*)malloc(sizeof(World2D)*M);
 
       for(int i=0; i<M; i++)               
          worlds[i] = readFile(folder+"world"+to_string(i)+".txt");
       
+      int i = 0;
+      omp_set_num_threads(2);
+      #pragma omp parallel for shared(worlds) private (i) schedule(static, 10)
+         for(i=0; i<M; i++)
+         {
+            ////cout << "World: " << i << endl;
+            simulate_world(worlds[i], generations);                  
+         }
 
-      for(int i=0; i<M; i++)
-      {
-         ////cout << "World: " << i << endl;
-         time = simulate_world(worlds[i], generations);         
-         totalTime += time;
-      }
+      for(int j = 0; j < M; j++)
+         totalTime += times[j];
 
       avgTime = totalTime/M;      
       //cout << "AvgTime: " << avgTime << endl;
