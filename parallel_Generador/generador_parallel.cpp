@@ -40,8 +40,8 @@ bool** create_world(int &N){
       {   
          for(n2=0; n2<N; n2++)
          {   
-            matrix[n1][n2] = rand() % 2; // 0 or 1
-            //matrix[n1][n2] = 1;
+            //matrix[n1][n2] = rand() % 2; // 0 or 1
+            matrix[n1][n2] = 1;
          }
       }   
    
@@ -65,21 +65,30 @@ int main(int argc, char *argv[])
       cout << N << " " << M << endl;      
 
       double totalTime, avgTime;
-
+      
       ofstream file;
-      file.open("patterns/patterns_report.txt");
+      file.open("patterns/patterns_report.txt");      
+      //vector<bool**> worlds(M);
       double start = clock();
-      vector<bool**> worlds(M);
+      double* times = (double*)malloc(sizeof(double) * M);
+
+      bool*** worlds = (bool***)malloc(sizeof(bool**) * M);
+      for(int i = 0; i < M; i++)
+         worlds[i] = (bool**)malloc(sizeof(bool*) * N);
 
       int i;
-      int chunk = 100;
-      omp_set_num_threads(4);  
-      #pragma omp parallel shared(worlds, chunk) private(i)
+      int chunk = N/8;
+      int threads = 4;
+      
+      #pragma omp parallel shared(worlds, chunk, M, N) private(i)
       {
-         #pragma omp for schedule(dynamic, chunk) nowait //schedule(static, 50)      
+         #pragma omp for schedule(dynamic, chunk) nowait
          for(i = 0; i < M; i++)
-         {
-            worlds[i] = create_world(N);
+         {            
+            double start_m = clock();
+            worlds[i] = create_world(N);     
+            times[i] = ((double)clock() - start) / (CLOCKS_PER_SEC * 1000);
+            totalTime += times[i];
          }
       }    
      
@@ -87,15 +96,26 @@ int main(int argc, char *argv[])
       // double time = (end_m - start)/CLOCKS_PER_SEC * 1000;
       // cout << "Matrices llenas en: " << time << " ms" << endl;
 
-      for(int j=0; j<M; j++){
-         string world_name = "patterns/world" + to_string(j) + ".txt";
-         createFile(world_name, worlds[j], N);
-         file << j << " " << N << " " << N*N << " " << time << endl;
-      
+      int j;
+      #pragma omp parallel shared(worlds, chunk, M, N) private(j)
+      {
+         #pragma omp for schedule(dynamic, chunk) nowait
+         for(j=0; j<M; j++){
+
+            string world_name = "patterns/world" + to_string(j) + ".txt";
+            createFile(world_name, worlds[j], N);            
+         }
       }
-      double end = clock();      
-      totalTime = (end - start) / CLOCKS_PER_SEC * 1000; // miliseconds
+
+      for(int k = 0; k < M; k++)
+      {
+         file << k << " " << N << " " << N*N << " " << times[k] << endl;      
+      }
+
+      double end = clock();            
       avgTime = totalTime/(double)M;
+
+      cout << "Total time: " << totalTime << " ms" << endl;
 
       file << M << " " << N*N*M << " " << totalTime << " " << avgTime << endl;
       file.close();
