@@ -1,12 +1,12 @@
 all:
 	g++ generator_parallel.c -o generator_parallel -fopenmp
-	g++ generator_sequential.c -o generator_sequential -fopenmp
+	g++ generator_sequential.c -o generator_sequential
 
 parallel:
 	g++ generator_parallel.c -o generator_parallel -fopenmp
 
 sequential:
-	g++ generator_sequential.c -o generator_sequential -fopenmp
+	g++ generator_sequential.c -o generator_sequential
 
 clean:
 	rm generator_parallel

@@ -2,7 +2,6 @@
 #include "string.h"
 #include "time.h"
 #include "stdlib.h"
-#include "omp.h"
 
 static unsigned int g_seed;
 

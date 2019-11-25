@@ -33,16 +33,6 @@ void print_world_beautiful(const World2D &world){
    }
 }
 
-void print_world(const World2D &world){
-   int size = (int)world.size();
-   for(int r=0; r<size; r++){
-      for(int c=0; c<size; c++){
-         cout << world[r][c] << " ";
-      }
-      cout << endl;
-   }
-}
-
 int celulas_vivas(const World2D& world, const int& row, const int& col) {
    int c = 0;
    int size = (int) world.size();
@@ -98,7 +88,7 @@ World2D readFile(string world_file)
    return world;
 }
 
-double simulate_world(World2D world, int &generations)
+double simulate_world(World2D world, const int generations)
 {   
    double total = 0;
    
@@ -111,28 +101,27 @@ double simulate_world(World2D world, int &generations)
    {
       //Detect cells that die or born
       int r,c;
-      omp_set_num_threads(2);      
-      #pragma omp parallel for shared(world, N) private (r,c, vivas, cells) schedule(static, 10)      
-         for(r=0; r<N; r++)
+
+      for(r=0; r<N; r++)
+      {
+         for(c=0; c<N; c++)
          {
-            for(c=0; c<N; c++)
-            {
-               vivas = celulas_vivas(world, r, c);
-               if(!world[r][c])
-               { //if its dead
-                  if(vivas == 3) cells.push_back({r, c}); 
-               }
-               else
-               {
-                  if(vivas != 2 && vivas != 3) cells.push_back({r, c});
-               }
+            vivas = celulas_vivas(world, r, c);
+            if(!world[r][c])
+            { //if its dead
+               if(vivas == 3) cells.push_back({r, c}); 
             }
-         }      
-         //Change the cells
-         for(Cell cell : cells)      
-            world[cell.r][cell.c] = !world[cell.r][cell.c];
-         
-         cells.clear();                      
+            else
+            {
+               if(vivas != 2 && vivas != 3) cells.push_back({r, c});
+            }
+         }
+      }      
+      //Change the cells
+      for(Cell cell : cells)      
+         world[cell.r][cell.c] = !world[cell.r][cell.c];
+      
+      cells.clear();                      
    }  
 
    return total;
@@ -144,38 +133,47 @@ int main(int argc, char *argv[])
    string folder = "";
    int generations = 0, M = 0;
 
-   if(argc < 3)
+   if (argc != 4)
    {
-      cout << "Not enough arguments" << endl;
-      cout << "./gameoflife [dir folder] [num generations] [num patterns]" << endl;
+      cout << "Invalid options." << endl;
+      cout << "Usage: ./gameoflife_parellel patterns_folder num_generations num_patterns" << endl;        
+      exit(1);
    }
-   else
-   {
-      folder = argv[1];
-      generations = atoi(argv[2]);
-      M = atoi(argv[3]);
-      double totalTime=0, avgTime=0;
+   folder = argv[1];
+   generations = atoi(argv[2]);
+   M = atoi(argv[3]);
 
-      double *times = (double*)malloc(sizeof(double)*M);
-      World2D *worlds = (World2D*)malloc(sizeof(World2D)*M);
+   double totalTime=0;
 
-      for(int i=0; i<M; i++)               
-         worlds[i] = readFile(folder+"world"+to_string(i));
-      
-      int i = 0;
-      #pragma omp parallel for shared(worlds) private (i) schedule(static, 10)
-         for(i=0; i<M; i++)
-         {
-            double start = omp_get_wtime();
-            simulate_world(worlds[i], generations);                  
-            double end = omp_get_wtime();
-            double time = (end - start) * 1000; //ms
-         }
+   ofstream report;
+   report.open("reports/report_parallel");
+   
+   World2D world;               
+   
+   int i;
+   int num_simulation = 0;
+   int total_cells = 0;
 
-      for(int j = 0; j < M; j++)
-         totalTime += times[j];
+   #pragma omp parallel for private(i, world) shared(report, num_simulation, total_cells) reduction(+: totalTime) schedule(static, 20)
+      for(i=0; i<M; i++)
+      {         
+         world = readFile(folder+"pattern_"+to_string(i)+".txt");
+         double start = omp_get_wtime();
+         simulate_world(world, generations);                  
+         double end = omp_get_wtime();
 
-      avgTime = totalTime/M;      
-      cout << "AvgTime: " << avgTime << endl;
-   }
+         double time = (end - start) * 1000; //ms
+         int cells = world.size();
+         report << num_simulation++ << " " << i << " " << cells << " " << generations << " " << time << "\n";
+         totalTime += time;
+
+         total_cells += cells;
+      }
+   
+   total_cells = total_cells * generations;   
+
+   report << M << " " << total_cells << " " << totalTime << " " << (double)total_cells/totalTime;
+   report.close();
+   
+   return 0;
 }
