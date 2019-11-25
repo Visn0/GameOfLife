@@ -11,6 +11,10 @@ sequential:
 clean:
 	rm generator_parallel
 	rm generator_sequential		
-	rm reports/*
-	rm patterns/*
+	rm reports/*		
+	rm patterns/*.txt	
+
+clean_results:
+	rm results/parallel.*
+	rm results/sequential.time
 
