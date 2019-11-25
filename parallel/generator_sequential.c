@@ -46,10 +46,13 @@ void save_as_file(char* filename, char** cells, unsigned n)
     fclose(file);
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    unsigned n = 500;
-    unsigned m = 500;
+    unsigned n, m;
+    if (argc != 3)
+        exit(1);
+    n = atoi(argv[1]);
+    m = atoi(argv[2]);
     fast_srand(time(NULL));
     unsigned i;
     char** pattern;

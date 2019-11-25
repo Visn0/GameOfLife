@@ -46,10 +46,13 @@ void save_as_file(char* filename, char** cells, unsigned n)
     fclose(file);
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    unsigned n = 500;
-    unsigned m = 500;
+    unsigned n, m;
+    if (argc != 3)
+        exit(1);
+    n = atoi(argv[1]);
+    m = atoi(argv[2]);
     fast_srand(time(NULL));
     unsigned i;
     char** pattern;
@@ -57,7 +60,7 @@ int main()
     fprintf(report, "Num_Pattern Value_N Num_Cells Time \n");
     unsigned num_pattern = 0;
     double total_time = 0;
-    #pragma omp parallel for private(i, pattern) shared(report, num_pattern) reduction(+: total_time) schedule(static, 50) num_threads(4)
+    #pragma omp parallel for private(i, pattern) shared(report, num_pattern) reduction(+: total_time) schedule(static, 50)
     for (i = 0; i < m; i++)
     {
         double start = omp_get_wtime();
