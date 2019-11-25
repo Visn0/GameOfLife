@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
       World2D *worlds = (World2D*)malloc(sizeof(World2D)*M);
 
       for(int i=0; i<M; i++)               
-         worlds[i] = readFile(folder+"world"+to_string(i)+".txt");
+         worlds[i] = readFile(folder+"world"+to_string(i));
       
 
       for(int i=0; i<M; i++)

@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 
     unsigned i;
     char** pattern;
-    FILE* report = fopen("reports/report_sequential.txt", "w");
+    FILE* report = fopen("reports/report_sequential", "w");
     fprintf(report, "Num_Pattern Value_N Num_Cells Time \n");
     unsigned num_pattern = 0;
     double total_time = 0;
