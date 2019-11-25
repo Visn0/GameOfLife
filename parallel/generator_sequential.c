@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     fast_srand(time(NULL));
     unsigned i;
     char** pattern;
-    FILE* report = fopen("report", "w");
+    FILE* report = fopen("report_sequential.txt", "w");
     fprintf(report, "Num_Pattern Value_N Num_Cells Time \n");
     unsigned num_pattern = 0;
     double total_time = 0;
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
         total_time += total;
         fprintf(report, "%d %d %d %f\n", num_pattern++, n, n*n, total);
         char filename[20];
-        sprintf(filename, "patterns/pattern_%d", i);
+        sprintf(filename, "patterns/pattern_%d.txt", i);
         save_as_file(filename, pattern, n);
         for (unsigned j = 0; j < n; j++)
             free(pattern[j]);

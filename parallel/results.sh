@@ -5,6 +5,6 @@ do
     export OMP_NUM_THREADS=$i
     for j in {50..1000..50};
     do
-        /usr/bin/time -f "$j %U" -o "parallel.$i.thread.time" -a ./generator $j 500
+        /usr/bin/time -f "$j %U" -o "results/parallel.$i.thread.time" -a ./generator $j 500
     done
 done
