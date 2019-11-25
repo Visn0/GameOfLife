@@ -106,13 +106,6 @@ double simulate_world(World2D world, int &generations)
    int N = world.size();
 
    vector<Cell> cells;
-   
-   //START THE SIMULATION
-   clock_t begin = clock();
-
-   // cout << "Generación: 0" << endl;   
-   // print_world_beautiful(world);
-   // cout << endl;
 
    for(int i=0; i<generations; i++)
    {
@@ -140,11 +133,7 @@ double simulate_world(World2D world, int &generations)
             world[cell.r][cell.c] = !world[cell.r][cell.c];
          
          cells.clear();                      
-   }
-
-   //END SIMULATION
-   clock_t end = clock();
-   total = double(end - begin)*1000 / CLOCKS_PER_SEC;   
+   }  
 
    return total;
 }
@@ -174,12 +163,13 @@ int main(int argc, char *argv[])
          worlds[i] = readFile(folder+"world"+to_string(i)+".txt");
       
       int i = 0;
-      omp_set_num_threads(2);
       #pragma omp parallel for shared(worlds) private (i) schedule(static, 10)
          for(i=0; i<M; i++)
          {
-            cout << "World: " << i << endl;
+            double start = omp_get_wtime();
             simulate_world(worlds[i], generations);                  
+            double end = omp_get_wtime();
+            double time = (end - start) * 1000; //ms
          }
 
       for(int j = 0; j < M; j++)
