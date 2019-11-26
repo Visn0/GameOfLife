@@ -14,7 +14,8 @@ clean:
 	rm reports/*		
 	rm patterns/*.txt	
 
-clean_results:
-	rm results/parallel.*
-	rm results/sequential.time
+clean_res_parallel:
+	rm results/parallel*
 
+clean_res_seq:
+	rm results/sequential*

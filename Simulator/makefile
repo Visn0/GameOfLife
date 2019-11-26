@@ -13,6 +13,8 @@ clean:
 	rm gameoflife_sequential
 	rm reports/*
 
-clean_results:
-	rm results/parallel.*
-	rm results/sequential.time
+clean_res_parallel:
+	rm results/parallel*
+
+clean_res_seq:
+	rm results/sequential*

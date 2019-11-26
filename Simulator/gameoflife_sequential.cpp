@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
    double totalTime=0;
 
    ofstream report;
-   report.open("reports/report_parallel");
+   report.open("reports/report_sequential");
    
    World2D world;
   

@@ -1,11 +1,12 @@
 #!/bin/bash
 
 cd ../Generator
-make clean 
+make clean
 make all
 ./generator_parallel 50 1000
 cd ../Simulator
 make clean
+make clean_res_parallel
 make all
 
 for i in {1..4};

@@ -11,14 +11,15 @@ void writeSpeedUp(string folder, vector<vector<float>> data_parallel, vector<flo
     for(int i = 0; i < data_parallel.size(); i++)
     {   
         ofstream speedup;
-        speedup.open(folder + "/speedup." + to_string(i+1) + ".thread");
+        speedup.open(folder + "/speedup_efficiency." + to_string(i+1) + ".thread");
 
         if(speedup.is_open())
         {
             for(int j = 0; j < data_sequential.size(); j++)
             {
-                float value = (data_parallel[i][j] == 0) ? 0 : data_sequential[j] / data_parallel[i][j];
-                speedup << 50*(j+1) << " " << value << endl;
+                float spup = (data_parallel[i][j] == 0) ? 0 : data_sequential[j] / data_parallel[i][j];
+                float efficiency = spup / (i+1);
+                speedup << 50*(j+1) << " " << spup << " " << efficiency << endl;
             }
             
             speedup.close();

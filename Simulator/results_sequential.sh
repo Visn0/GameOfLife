@@ -6,6 +6,7 @@ make all
 ./generator_parallel 50 1000
 cd ../Simulator
 make clean
+make clean_res_seq
 make all
 
 for j in {50..1000..50};
