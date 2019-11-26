@@ -153,8 +153,10 @@ int main(int argc, char *argv[])
    int i;
    int num_simulation = 0;
    int total_cells = 0;
+   int threads = atoi(getenv("OMP_NUM_THREADS"));
+   int chunk = M/threads;
 
-   #pragma omp parallel for private(i, world) shared(report, num_simulation, total_cells) reduction(+: totalTime) schedule(static, 20)
+   #pragma omp parallel for private(i, world) shared(report, num_simulation, total_cells) reduction(+: totalTime) schedule(static, chunk)
       for(i=0; i<M; i++)
       {         
          world = readFile(folder+"pattern_"+to_string(i)+".txt");
@@ -174,6 +176,6 @@ int main(int argc, char *argv[])
 
    report << M << " " << total_cells << " " << totalTime << " " << (double)total_cells/totalTime;
    report.close();
-   
+
    return 0;
 }
