@@ -68,7 +68,10 @@ int main(int argc, char** argv)
     unsigned num_pattern = 0;
     double total_time = 0;
 
-    #pragma omp parallel for private(i, pattern) shared(report, num_pattern) reduction(+: total_time) schedule(static, 50)
+    int threads = atoi(getenv("OMP_NUM_THREADS"));
+    int chunk = m/threads;
+
+    #pragma omp parallel for private(i, pattern) shared(report, num_pattern) reduction(+: total_time) schedule(static, chunk)
         for (i = 0; i < m; i++)
         {
             double start = omp_get_wtime();
