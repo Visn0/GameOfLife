@@ -14,15 +14,14 @@ generations=50
 
 for i in {1..4};
 do
-    set OMP_NUM_THREADS=$i
     export OMP_NUM_THREADS=$i
     for j in {50..1000..50};
-    do
-        /usr/bin/time -f "$j %U" -o "results/parallel.$i.thread.time" -a ./gameoflife_parallel ../Generator/patterns/ $generations $j
+    do        
+        /usr/bin/time -f "$j %e" -o "results/parallel.$i.thread.time" -a ./gameoflife_parallel ../Generator/patterns/ $generations $j
     done
 done
 
 for j in {50..1000..50};
 do
-    /usr/bin/time -f "$j %U" -o "results/sequential.time" -a ./gameoflife_sequential ../Generator/patterns/ $generations $j        
+    /usr/bin/time -f "$j %e" -o "results/sequential.time" -a ./gameoflife_sequential ../Generator/patterns/ $generations $j        
 done

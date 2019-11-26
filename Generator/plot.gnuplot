@@ -16,7 +16,7 @@ plot 'results/speedup_efficiency.2.thread' using  1:2 with lines title '2 thread
 'results/speedup_efficiency.4.thread' using  1:2 with lines title '4 threads'
 
 set xlabel 'M (patterns)'
-set ylabel 'speedup (speedup / threads)'
+set ylabel 'efficiency (speedup / threads)'
 set term png
 set output 'images/efficiency.graph'
 plot 'results/speedup_efficiency.2.thread' using  1:3 with lines title '2 threads', \
