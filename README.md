@@ -12,11 +12,10 @@ The directories are:
     - makefile.
     - plot.gnuplot: to run this, execute the following --> gnuplot plot.gnuplot
         * creates the plots of the data found in /results/.
-    - results_parallel.sh: executes the parallel generator changing automatically the number of threads and the amount of data used.
+    - results.sh: 
+        * Executes the parallel generator changing automatically the number of threads and the amount of data used.        
         * Creates the files /results/parallel.n.thread.time, where n is the number of threads used for that execution.
-    - results_sequential.sh: executes the sequential generator changing automatically the amount of data used and creates the file /results/sequential.time
-
-
+        * Executes the sequential generator changing automatically the amount of data used and creates the file /results/sequential.time
 + /Simulator/:
     - /images/: contains plots comparing parallel simulator vs sequential simulator.    
     - /reports/: contains the execution report of both simulators.
@@ -26,9 +25,10 @@ The directories are:
     - makefile.
     - plot.gnuplot: to run this, execute the following --> gnuplot plot.gnuplot
         * creates the plots of the data found in /results/.
-    - results_parallel.sh: executes the parallel simulator changing automatically the number of threads and the amount of data used.
+    - results.sh: 
+        * Executes the parallel simulator changing automatically the number of threads and the amount of data used.
         * Creates the files /results/parallel.n.thread.time, where n is the number of threads used for that execution.
-    - results_sequential.sh: executes the sequential simulator changing automatically the amount of data used and creates the file /results/sequential.time
+        * Executes the sequential simulator changing automatically the amount of data used and creates the file /results/sequential.time
 
 + calculate_speedup.cpp: using the data created by the scripts results_parallel.sh and results_sequential.sh in /Generator/results/ or /Simulator/results/,
     calculates the speedup obtained with the parallelization and create the file speedup.n.thread in one of those folders. n is the number of threads.
