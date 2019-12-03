@@ -1,5 +1,10 @@
 # GameOfLife
 
+In case of executing by hand the generator of patterns or the simulator, the environment variable OMP_NUM_THREADS must be set with a number greater than zero. This is necessary because these programs read that variable to know the threads and divide the work properly between them. To set this variable run in the folder /Generator/ or /Simulator/ the following command:
+    export OMP_NUM_THREADS=number      where number is the number of threads, for example 4.
+    
+In case of using the scripts explained below, the previous configuration is not necessary because it is done automatically by the scripts.
+
 The directories are:
 
 + /Generator/:
